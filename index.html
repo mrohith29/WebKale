@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upcoming Events</title>
+    <style>
+        /* Add your CSS styles here for a visually appealing design */
+        /* Make sure to use responsive design for different screen sizes */
+    </style>
+</head>
+<body>
+    <h1>Upcoming Events</h1>
+    <div id="calendar"></div>
+    
+    <!-- Include the Google API Client Library -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        // Load the Google Calendar API
+        gapi.load('client:auth2', initClient);
+
+        // Client ID from the Google Cloud Console
+        const CLIENT_ID = 'YOUR_CLIENT_ID';
+
+        // Initialize the API client with your key
+        function initClient() {
+            gapi.client.init({
+                clientId: CLIENT_ID,
+                scope: 'https://www.googleapis.com/auth/calendar.readonly',
+            }).then(function() {
+                // Authenticate with Google Calendar API
+                gapi.auth2.getAuthInstance().signIn();
+                loadCalendarEvents();
+            });
+        }
+
+        // Load and display calendar events
+        function loadCalendarEvents() {
+            var request = gapi.client.calendar.events.list({
+                calendarId: 'primary', // Use 'primary' for the user's primary calendar
+                timeMin: (new Date()).toISOString(),
+                showDeleted: false,
+                singleEvents: true,
+                maxResults: 10,
+                orderBy: 'startTime'
+            });
+
+            request.execute(function(response) {
+                var events = response.items;
+
+                if (events.length > 0) {
+                    var eventList = document.getElementById('calendar');
+                    for (var i = 0; i < events.length; i++) {
+                        var event = events[i];
+                        var eventTitle = event.summary;
+                        var eventDescription = event.description;
+                        var eventStart = new Date(event.start.dateTime);
+                        var eventEnd = new Date(event.end.dateTime);
+
+                        // Display event information in your desired format
+                        var eventInfo = document.createElement('div');
+                        eventInfo.innerHTML = '<strong>' + eventTitle + '</strong><br>' +
+                            'Start: ' + eventStart.toLocaleString() + '<br>' +
+                            'End: ' + eventEnd.toLocaleString() + '<br>' +
+                            'Description: ' + eventDescription;
+
+                        eventList.appendChild(eventInfo);
+                    }
+                } else {
+                    console.log('No upcoming events found.');
+                }
+            });
+        }
+    </script>
+    <!-- Include your Google API Client ID in the script tag above -->
+    <!-- You should replace 'YOUR_CLIENT_ID' with your actual client ID -->
+    <!-- You can obtain your client ID from the Google Cloud Console -->
+    <script src="https://apis.google.com/js/client.js?onload=initClient"></script>
+</body>
+</html>
