@@ -18,17 +18,19 @@
         gapi.load('client:auth2', initClient);
 
         // Client ID from the Google Cloud Console
-        const CLIENT_ID = 'YOUR_CLIENT_ID';
+        const CLIENT_ID = '183624870371-f62n21eo3qcau6jt107sk0d5d0pldac7.apps.googleusercontent.com'; // Replace with your actual client ID
 
         // Initialize the API client with your key
         function initClient() {
             gapi.client.init({
-                clientId: CLIENT_ID,
+                clientId: CLIENT_ID, // Use your client ID here
                 scope: 'https://www.googleapis.com/auth/calendar.readonly',
             }).then(function() {
                 // Authenticate with Google Calendar API
-                gapi.auth2.getAuthInstance().signIn();
-                loadCalendarEvents();
+                return gapi.auth2.getAuthInstance().signIn();
+            }).then(loadCalendarEvents)
+            .catch(function(error) {
+                console.error('Error initializing or authenticating with Google Calendar API: ' + error.details);
             });
         }
 
@@ -71,8 +73,6 @@
         }
     </script>
     <!-- Include your Google API Client ID in the script tag above -->
-    <!-- You should replace 'YOUR_CLIENT_ID' with your actual client ID -->
-    <!-- You can obtain your client ID from the Google Cloud Console -->
     <script src="https://apis.google.com/js/client.js?onload=initClient"></script>
 </body>
 </html>
